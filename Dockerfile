@@ -1,21 +1,21 @@
-# ✅ Use a fuller base image with prebuilt binary support
+# Use full Debian-based Python image (more build tools pre-included)
 FROM python:3.9-buster
 
-# 📁 Set working directory
+# Set working directory
 WORKDIR /app
 
-# 📦 Copy app files
+# Copy app files
 COPY . /app
 
-# 🚀 Upgrade pip and install dependencies with cleaned requirements
+# Upgrade pip and install dependencies in correct order
 RUN pip install --upgrade pip && \
+    pip install numpy==1.23.5 && \
     grep -vE 'tf_nightly|numpy==' requirements.txt > temp_requirements.txt && \
-    echo "numpy==1.23.5" >> temp_requirements.txt && \
     pip install --no-cache-dir -r temp_requirements.txt && \
     rm temp_requirements.txt
 
-# 🔓 Expose port (adjust as needed)
+# Expose port if needed
 EXPOSE 5000
 
-# 🚀 Start the application
+# Run the app
 CMD ["python", "bot.py"]
