@@ -1,34 +1,28 @@
-# Use a slightly more complete base image
-FROM python:3.9-slim-buster
+# Use slim Python image
+FROM python:3.9-slim
 
-# Install essential system dependencies for building packages like pandas and numpy
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    libffi-dev \
-    libssl-dev \
-    libpq-dev \
-    libatlas-base-dev \
-    build-essential \
-    python3-dev \
-    python3-pip \
+# Install build dependencies for pandas, numpy, etc.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc g++ build-essential \
+    libffi-dev libssl-dev libpq-dev python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy project files
+# Copy code
 COPY . /app
 
-# Upgrade pip and install numpy first to provide header files
+# Clean requirements and install dependencies
 RUN pip install --upgrade pip && \
-    pip install numpy==1.23.5 && \
-    grep -vE 'tf_nightly|numpy==' requirements.txt > temp_requirements.txt && \
-    pip install --no-cache-dir -r temp_requirements.txt && \
-    rm temp_requirements.txt
+    # remove duplicates and problematic packages
+    grep -vE 'tf_nightly|numpy==' requirements.txt | uniq > clean_requirements.txt && \
+    echo "numpy==1.23.5" >> clean_requirements.txt && \
+    pip install --no-cache-dir -r clean_requirements.txt && \
+    rm clean_requirements.txt
 
-# Expose the port if needed
+# Expose port (if needed)
 EXPOSE 5000
 
-# Start the application
+# Run the app
 CMD ["python", "bot.py"]
