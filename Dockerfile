@@ -1,14 +1,17 @@
+# Start from a Python base image
 FROM python:3.9-slim
 
-# Create and set working directory
-RUN mkdir /app
+# Set working directory
 WORKDIR /app
 
-# Copy project files
+# Copy all files
 COPY . /app
 
-# Install dependencies
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Default command
-CMD ["python3", "main.py"]
+# Optional: expose a port (adjust based on your app)
+EXPOSE 5000
+
+# Set the command to run your app (update as needed)
+CMD ["python", "bot.py"]
