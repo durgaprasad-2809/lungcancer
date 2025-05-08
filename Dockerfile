@@ -1,14 +1,14 @@
-mkdir docker
-mv Dockerfile docker/
-git add docker/Dockerfile
-git commit -m "Moved Dockerfile to docker/ directory"
-git push
 FROM python:3.9-slim
 
+# Create and set working directory
 RUN mkdir /app
-COPY . /app
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+# Copy project files
+COPY . /app
 
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Default command
 CMD ["python3", "main.py"]
