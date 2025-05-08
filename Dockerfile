@@ -1,17 +1,20 @@
-# Start from a Python base image
+# Start from a compatible Python base image
 FROM python:3.9-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy all files
+# Copy all files to the container
 COPY . /app
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Upgrade pip and install dependencies (excluding incompatible tf_nightly)
+RUN pip install --upgrade pip && \
+    grep -v 'tf_nightly' requirements.txt > temp_requirements.txt && \
+    pip install --no-cache-dir -r temp_requirements.txt && \
+    rm temp_requirements.txt
 
-# Optional: expose a port (adjust based on your app)
+# Optional: expose port if running a Flask or similar web app
 EXPOSE 5000
 
-# Set the command to run your app (update as needed)
+# Set the default command to run your app
 CMD ["python", "bot.py"]
