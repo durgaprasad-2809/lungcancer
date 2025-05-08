@@ -7,15 +7,16 @@ WORKDIR /app
 # Copy all files
 COPY . /app
 
-# Fix numpy conflict by removing all pinned numpy and tf_nightly lines
+# Upgrade pip and install dependencies
+# Remove tf_nightly and numpy lines, replace with compatible numpy version
 RUN pip install --upgrade pip && \
     grep -vE 'tf_nightly|numpy==' requirements.txt > temp_requirements.txt && \
-    echo "numpy==1.21.6" >> temp_requirements.txt && \
+    echo "numpy==1.23.5" >> temp_requirements.txt && \
     pip install --no-cache-dir -r temp_requirements.txt && \
     rm temp_requirements.txt
 
 # Optional: expose a port (adjust if needed)
 EXPOSE 5000
 
-# Set the default command
+# Run the bot
 CMD ["python", "bot.py"]
